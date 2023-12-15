@@ -2,6 +2,7 @@ package readradar.controller.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import readradar.entity.Author;
 import readradar.entity.Shelf;
 import readradar.entity.User;
@@ -22,7 +23,7 @@ public class ReadRadarUser{
     private Set<ReadRadarAuthor> authors = new HashSet<>();
     private Set<ReadRadarShelf> shelves = new HashSet<>();
 
-    public ReadRadarUser(User user) {
+    public ReadRadarUser(@NotNull User user) {
         this.userId = user.getUserId();
         this.userEmail = user.getUserEmail();
         this.userFirstName = user.getUserFirstName();
