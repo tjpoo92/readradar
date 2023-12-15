@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    username: readradar
+    password: readradar
+    url: jdbc:mysql://localhost:3306/readradar
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
