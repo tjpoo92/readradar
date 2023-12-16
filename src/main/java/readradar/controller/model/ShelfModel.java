@@ -8,12 +8,12 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
-public class ReadRadarShelf{
+public class ShelfModel {
     private Long shelfId;
     private Date shelfCreatedAt;
     private Date shelfUpdatedAt;
 
-    public ReadRadarShelf(Shelf shelf){
+    public ShelfModel(Shelf shelf){
         this.shelfId = shelf.getShelfId();
         this.shelfCreatedAt = shelf.getShelfCreatedAt();
         this.shelfUpdatedAt = shelf.getShelfUpdatedAt();

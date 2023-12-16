@@ -11,16 +11,16 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-public class ReadRadarBook {
+public class BookModel {
     private Long bookId;
     private String bookName;
     private Integer isbn;
     private Integer numberOfPage;
     private Year yearPublished;
     private Boolean userCreated;
-    private Set<ReadRadarShelf> shelves = new HashSet<>();
+    private Set<ShelfModel> shelves = new HashSet<>();
 
-    public ReadRadarBook(Book book){
+    public BookModel(Book book){
         this.bookId = book.getBookId();
         this.bookName = book.getBookName();
         this.isbn = book.getIsbn();
@@ -28,7 +28,7 @@ public class ReadRadarBook {
         this.yearPublished = book.getYearPublished();
         this.userCreated = book.getUserCreated();
         for(Shelf shelf : book.getShelves()){
-            this.shelves.add(new ReadRadarShelf(shelf));
+            this.shelves.add(new ShelfModel(shelf));
         }
   ;  }
 }

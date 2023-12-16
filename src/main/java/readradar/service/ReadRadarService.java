@@ -3,7 +3,7 @@ package readradar.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import readradar.controller.model.ReadRadarUser;
+import readradar.controller.model.UserModel;
 import readradar.dao.ShelfDao;
 import readradar.dao.BookDao;
 import readradar.dao.AuthorDao;
@@ -26,20 +26,20 @@ public class ReadRadarService {
     private ShelfDao shelfDao;
 
     @Transactional
-    public ReadRadarUser saveUser(ReadRadarUser readRadarUser) {
-        Long userId = readRadarUser.getUserId();
+    public UserModel saveUser(UserModel userModel) {
+        Long userId = userModel.getUserId();
         User user = findOrCreateUser(userId);
-        copyUserFields(user, readRadarUser);
+        copyUserFields(user, userModel);
 
-        return new ReadRadarUser(userDao.save(user));
+        return new UserModel(userDao.save(user));
     }
 
-    private void copyUserFields(User user, ReadRadarUser readRadarUser) {
-        user.setUserEmail(readRadarUser.getUserEmail());
-        user.setUserFirstName(readRadarUser.getUserFirstName());
-        user.setUserLastName(readRadarUser.getUserLastName());
-        user.setUserCreatedAt(readRadarUser.getUserCreatedAt());
-        user.setUserUpdatedAt(readRadarUser.getUserUpdatedAt());
+    private void copyUserFields(User user, UserModel userModel) {
+        user.setUserEmail(userModel.getUserEmail());
+        user.setUserFirstName(userModel.getUserFirstName());
+        user.setUserLastName(userModel.getUserLastName());
+        user.setUserCreatedAt(userModel.getUserCreatedAt());
+        user.setUserUpdatedAt(userModel.getUserUpdatedAt());
     }
 
     private User findOrCreateUser(Long userId) {
@@ -58,4 +58,14 @@ public class ReadRadarService {
                 .orElseThrow(() -> new NoSuchElementException("User with ID:" + userId + " was not found."));
     }
 
+    @Transactional(readOnly = true)
+    public UserModel retrieveUserById(Long userId) {
+        return new UserModel(findUserById(userId));
+    }
+
+    @Transactional
+    public void deleteUserById(Long userId) {
+        User user = findUserById(userId);
+        userDao.delete(user);
+    }
 }

@@ -11,20 +11,20 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-public class ReadRadarAuthor{
+public class AuthorModel {
     private Long authorId;
     private String authorFirstName;
     private String authorLastName;
     private Date authorBirthDate;
-    private Set<ReadRadarBook> books = new HashSet<>();
+    private Set<BookModel> books = new HashSet<>();
 
-    public ReadRadarAuthor(Author author){
+    public AuthorModel(Author author){
         this.authorId = author.getAuthorId();
         this.authorFirstName = author.getAuthorFirstName();
         this.authorLastName = author.getAuthorLastName();
         this.authorBirthDate = author.getAuthorBirthDate();
         for (Book book : author.getBooks()){
-            this.books.add(new ReadRadarBook(book));
+            this.books.add(new BookModel(book));
         }
     }
 }
