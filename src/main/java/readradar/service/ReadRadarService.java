@@ -122,4 +122,9 @@ public class ReadRadarService {
         }
         return result;
     }
+
+    @Transactional(readOnly = true)
+    public AuthorModel retrieveAuthorById(Long authorId) {
+        return new AuthorModel(findAuthorById(authorId));
+    }
 }

@@ -63,7 +63,15 @@ public class ReadRadarController{
     @ResponseStatus(code = HttpStatus.OK)
     public List<AuthorModel> getAllAuthor(@RequestParam(value = "filter", required = false) String[] filters){
         log.info("Retrieving all authors with the following filters {}", filters);
+        // TODO: Handle filters :)
         return readRadarService.retrieveAllAuthors();
+    }
+
+    @GetMapping("/authors/{authorId}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public AuthorModel getAuthorById(@PathVariable Long authorId){
+        log.info("Retrieving author user ID: {}", authorId);
+        return readRadarService.retrieveAuthorById(authorId);
     }
 
 
