@@ -9,6 +9,7 @@ import readradar.controller.model.UserModel;
 import readradar.entity.User;
 import readradar.service.ReadRadarService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -56,6 +57,13 @@ public class ReadRadarController{
     public AuthorModel postAuthor(@RequestBody AuthorModel authorModel){
         log.info("Creating author {}", authorModel);
         return readRadarService.saveAuthor(authorModel);
+    }
+
+    @GetMapping("/authors")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<AuthorModel> getAllAuthor(@RequestParam(value = "filter", required = false) String[] filters){
+        log.info("Retrieving all authors with the following filters {}", filters);
+        return readRadarService.retrieveAllAuthors();
     }
 
 

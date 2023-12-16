@@ -12,6 +12,8 @@ import readradar.dao.UserDao;
 import readradar.entity.Author;
 import readradar.entity.User;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -85,6 +87,7 @@ public class ReadRadarService {
         author.setAuthorFirstName(authorModel.getAuthorFirstName());
         author.setAuthorLastName(authorModel.getAuthorLastName());
         author.setAuthorBirthDate(authorModel.getAuthorBirthDate());
+        // TODO: Fix birthdate, dates in general prob need fixed
         // TODO: Books one author, many books
         // TODO: Users many authors, many users
     }
@@ -104,5 +107,19 @@ public class ReadRadarService {
     private Author findAuthorById(Long authorId) {
         return authorDao.findById(authorId)
                 .orElseThrow(() -> new NoSuchElementException("Author with ID:" + authorId + " was not found."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<AuthorModel> retrieveAllAuthors() {
+        List<Author> authors = authorDao.findAll();
+        List<AuthorModel> result = new LinkedList<>();
+
+        for (Author author : authors){
+            AuthorModel authorModel = new AuthorModel(author);
+            // TODO: Verify once book endpoints are done
+            authorModel.getBooks().stream().limit(5);
+            result.add(authorModel);
+        }
+        return result;
     }
 }
