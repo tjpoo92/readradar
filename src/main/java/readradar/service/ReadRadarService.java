@@ -3,11 +3,13 @@ package readradar.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import readradar.controller.model.AuthorModel;
 import readradar.controller.model.UserModel;
 import readradar.dao.ShelfDao;
 import readradar.dao.BookDao;
 import readradar.dao.AuthorDao;
 import readradar.dao.UserDao;
+import readradar.entity.Author;
 import readradar.entity.User;
 
 import java.util.NoSuchElementException;
@@ -40,6 +42,7 @@ public class ReadRadarService {
         user.setUserLastName(userModel.getUserLastName());
         user.setUserCreatedAt(userModel.getUserCreatedAt());
         user.setUserUpdatedAt(userModel.getUserUpdatedAt());
+        // TODO: Author information many users, many books
     }
 
     private User findOrCreateUser(Long userId) {
@@ -67,5 +70,39 @@ public class ReadRadarService {
     public void deleteUserById(Long userId) {
         User user = findUserById(userId);
         userDao.delete(user);
+    }
+
+    @Transactional
+    public AuthorModel saveAuthor(AuthorModel authorModel) {
+        Long authorId = authorModel.getAuthorId();
+        Author author = findOrCreateAuthor(authorId);
+        copyAuthorFields(author, authorModel);
+
+        return new AuthorModel(authorDao.save(author));
+    }
+
+    private void copyAuthorFields(Author author, AuthorModel authorModel) {
+        author.setAuthorFirstName(authorModel.getAuthorFirstName());
+        author.setAuthorLastName(authorModel.getAuthorLastName());
+        author.setAuthorBirthDate(authorModel.getAuthorBirthDate());
+        // TODO: Books one author, many books
+        // TODO: Users many authors, many users
+    }
+
+    private Author findOrCreateAuthor(Long authorId) {
+        Author author;
+
+        if (Objects.isNull(authorId)){
+            author = new Author();
+        } else{
+            author = findAuthorById(authorId);
+        }
+        return author;
+
+    }
+
+    private Author findAuthorById(Long authorId) {
+        return authorDao.findById(authorId)
+                .orElseThrow(() -> new NoSuchElementException("Author with ID:" + authorId + " was not found."));
     }
 }

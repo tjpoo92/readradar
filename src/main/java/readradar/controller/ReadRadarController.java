@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import readradar.controller.model.AuthorModel;
 import readradar.controller.model.UserModel;
 import readradar.entity.User;
 import readradar.service.ReadRadarService;
@@ -18,6 +19,7 @@ public class ReadRadarController{
     @Autowired
     private ReadRadarService readRadarService;
 
+    // User Endpoints
     @PostMapping("/users")
     @ResponseStatus(code = HttpStatus.CREATED)
     public UserModel postUser(@RequestBody UserModel userModel){
@@ -46,6 +48,14 @@ public class ReadRadarController{
         log.info("Deleting User with ID: {}", userId);
         readRadarService.deleteUserById(userId);
         return Map.of("message", "Deletion of user with ID:" + userId);
+    }
+
+    // Author Endpoints
+    @PostMapping("/authors")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public AuthorModel postAuthor(@RequestBody AuthorModel authorModel){
+        log.info("Creating author {}", authorModel);
+        return readRadarService.saveAuthor(authorModel);
     }
 
 
