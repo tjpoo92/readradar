@@ -156,4 +156,50 @@ public class ReadRadarService {
         }
         return result;
     }
+
+    @Transactional
+    public BookModel saveBook(BookModel bookModel) {
+        Long bookId = bookModel.getBookId();
+        Long bookIsbn = bookModel.getIsbn();
+        Book book = findOrCreateBook(bookId, bookIsbn);
+        copyBookFields(book, bookModel);
+
+        return new BookModel(bookDao.save(book));
+    }
+
+    private void copyBookFields(Book book, BookModel bookModel) {
+        book.setBookName(bookModel.getBookName());
+        book.setNumberOfPages(bookModel.getNumberOfPage());
+        book.setYearPublished(bookModel.getYearPublished());
+        book.setUserCreated(true);
+        // TODO: How tf do I handle author portion?
+    }
+
+    private Book findOrCreateBook(Long bookId, Long bookIsbn) {
+        Book book;
+
+        if (Objects.isNull(bookId) && Objects.isNull(bookIsbn)){
+            book = new Book();
+        } else if (Objects.isNull(bookIsbn)){
+            book = findBookById(bookId);
+        } else {
+            book = findBookByIsbn(bookIsbn);
+        }
+        return book;
+    }
+
+    @Transactional(readOnly = true)
+    private Book findBookByIsbn(Long bookIsbn) {
+        return bookDao.findByIsbn(bookIsbn)
+                .orElseThrow(()-> new NoSuchElementException
+                        ("Book with ISBN:" + bookIsbn + " was not found"));
+    }
+
+    @Transactional(readOnly = true)
+    private Book findBookById(Long bookId) {
+        return bookDao.findById(bookId)
+                .orElseThrow(()-> new NoSuchElementException
+                        ("Book with ID:"+ bookId + " was not found."));
+    }
+
 }

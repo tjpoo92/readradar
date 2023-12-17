@@ -76,6 +76,12 @@ public class ReadRadarController{
     }
 
     // Book Endpoints
+    @PostMapping("/books")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public BookModel postBook(@RequestBody BookModel bookModel){
+        log.info("Creating book {}", bookModel);
+        return readRadarService.saveBook(bookModel);
+    }
 
     @GetMapping("/books")
     @ResponseStatus(code = HttpStatus.OK)
@@ -83,6 +89,5 @@ public class ReadRadarController{
         log.info("Retrieving all books with the following filters {}", filters);
         return readRadarService.retrieveAllBooks(filters);
     }
-
 
 }

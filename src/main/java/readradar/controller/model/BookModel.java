@@ -14,7 +14,7 @@ import java.util.Set;
 public class BookModel {
     private Long bookId;
     private String bookName;
-    private Integer isbn;
+    private Long isbn;
     private Integer numberOfPage;
     private Year yearPublished;
     private Boolean userCreated;

@@ -17,7 +17,7 @@ public class Book {
     private Long bookId;
     private String bookName;
     @Column(unique = true)
-    private Integer isbn;
+    private Long isbn;
     private Integer numberOfPages;
     private Year yearPublished;
     private Boolean userCreated;
