@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import readradar.controller.model.AuthorModel;
+import readradar.controller.model.BookModel;
 import readradar.controller.model.UserModel;
 import readradar.dao.ShelfDao;
 import readradar.dao.BookDao;
 import readradar.dao.AuthorDao;
 import readradar.dao.UserDao;
 import readradar.entity.Author;
+import readradar.entity.Book;
 import readradar.entity.User;
 
 import java.util.*;
@@ -135,5 +137,23 @@ public class ReadRadarService {
     @Transactional(readOnly = true)
     public AuthorModel retrieveAuthorById(Long authorId) {
         return new AuthorModel(findAuthorById(authorId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookModel> retrieveAllBooks(Map<String, String> filters) {
+        List<Book> books = null;
+        if (filters.isEmpty()){
+            books = bookDao.findAll();
+        } else{
+            books = bookDao.findByBookName(filters.get("bookName"));
+        }
+
+        List<BookModel> result = new LinkedList<>();
+
+        for (Book book : books){
+            BookModel bookModel = new BookModel(book);
+            result.add(bookModel);
+        }
+        return result;
     }
 }

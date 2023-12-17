@@ -1,11 +1,13 @@
 package readradar.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import readradar.controller.model.AuthorModel;
+import readradar.controller.model.BookModel;
 import readradar.controller.model.UserModel;
 import readradar.service.ReadRadarService;
 
@@ -63,7 +65,6 @@ public class ReadRadarController{
     @ResponseStatus(code = HttpStatus.OK)
     public List<AuthorModel> getAllAuthor(@RequestParam(required = false) Map<String,String> filters){
         log.info("Retrieving all authors with the following filters {}", filters);
-        // TODO: Handle filters :)
         return readRadarService.retrieveAllAuthors(filters);
     }
 
@@ -72,6 +73,15 @@ public class ReadRadarController{
     public AuthorModel getAuthorById(@PathVariable Long authorId){
         log.info("Retrieving author user ID: {}", authorId);
         return readRadarService.retrieveAuthorById(authorId);
+    }
+
+    // Book Endpoints
+
+    @GetMapping("/books")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<BookModel> getAllBook(@RequestParam(required = false) Map<String, String> filters){
+        log.info("Retrieving all books with the following filters {}", filters);
+        return readRadarService.retrieveAllBooks(filters);
     }
 
 
