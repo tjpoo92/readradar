@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import readradar.controller.model.AuthorModel;
 import readradar.controller.model.BookModel;
 import readradar.controller.model.UserModel;
+import readradar.entity.Book;
 import readradar.service.ReadRadarService;
 
 import java.util.List;
@@ -71,7 +72,7 @@ public class ReadRadarController{
     @GetMapping("/authors/{authorId}")
     @ResponseStatus(code = HttpStatus.OK)
     public AuthorModel getAuthorById(@PathVariable Long authorId){
-        log.info("Retrieving author user ID: {}", authorId);
+        log.info("Retrieving author using ID: {}", authorId);
         return readRadarService.retrieveAuthorById(authorId);
     }
 
@@ -89,5 +90,28 @@ public class ReadRadarController{
         log.info("Retrieving all books with the following filters {}", filters);
         return readRadarService.retrieveAllBooks(filters);
     }
+
+    @GetMapping("/books/{bookId}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public BookModel getBookById(@PathVariable Long bookId){
+        log.info("Retrieving book using ID: {}", bookId);
+        return readRadarService.retrieveBookById(bookId);
+    }
+
+    @GetMapping("/books/isbn/{bookIsbn}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public BookModel getBookByIsbn(@PathVariable Long bookIsbn){
+        log.info("Retrieving book using ISBN: {}", bookIsbn);
+        return readRadarService.retrieveBookByIsbn(bookIsbn);
+    }
+
+    @PutMapping("/books/{bookId}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public BookModel putBook(@PathVariable Long bookId, @RequestBody BookModel bookModel){
+        log.info("Update Book {} with {}", bookId, bookModel);
+        return readRadarService.saveBook(bookModel);
+    }
+
+
 
 }

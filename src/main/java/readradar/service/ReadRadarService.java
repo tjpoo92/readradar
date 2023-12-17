@@ -110,7 +110,7 @@ public class ReadRadarService {
 
     @Transactional(readOnly = true)
     public List<AuthorModel> retrieveAllAuthors(Map<String,String> filters) {
-        List<Author> authors = null;
+        List<Author> authors;
         if (filters.isEmpty()){
             authors = authorDao.findAll();
         } else{
@@ -141,7 +141,7 @@ public class ReadRadarService {
 
     @Transactional(readOnly = true)
     public List<BookModel> retrieveAllBooks(Map<String, String> filters) {
-        List<Book> books = null;
+        List<Book> books;
         if (filters.isEmpty()){
             books = bookDao.findAll();
         } else{
@@ -161,8 +161,12 @@ public class ReadRadarService {
     public BookModel saveBook(BookModel bookModel) {
         Long bookId = bookModel.getBookId();
         Long bookIsbn = bookModel.getIsbn();
+
         Book book = findOrCreateBook(bookId, bookIsbn);
-        copyBookFields(book, bookModel);
+
+        if (book.getUserCreated() == true){
+            copyBookFields(book, bookModel);
+        }
 
         return new BookModel(bookDao.save(book));
     }
@@ -171,7 +175,6 @@ public class ReadRadarService {
         book.setBookName(bookModel.getBookName());
         book.setNumberOfPages(bookModel.getNumberOfPage());
         book.setYearPublished(bookModel.getYearPublished());
-        book.setUserCreated(true);
         // TODO: How tf do I handle author portion?
     }
 
@@ -180,6 +183,7 @@ public class ReadRadarService {
 
         if (Objects.isNull(bookId) && Objects.isNull(bookIsbn)){
             book = new Book();
+            book.setUserCreated(true);
         } else if (Objects.isNull(bookIsbn)){
             book = findBookById(bookId);
         } else {
@@ -202,4 +206,13 @@ public class ReadRadarService {
                         ("Book with ID:"+ bookId + " was not found."));
     }
 
+    @Transactional(readOnly = true)
+    public BookModel retrieveBookById(Long bookId) {
+        return new BookModel(findBookById(bookId));
+    }
+
+    @Transactional(readOnly = true)
+    public BookModel retrieveBookByIsbn(Long bookIsbn){
+        return new BookModel(findBookByIsbn(bookIsbn));
+    }
 }
