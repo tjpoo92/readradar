@@ -1,8 +1,11 @@
 package readradar.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.server.MethodNotAllowedException;
 import readradar.controller.model.AuthorModel;
 import readradar.controller.model.BookModel;
 import readradar.controller.model.UserModel;
@@ -14,6 +17,7 @@ import readradar.entity.Author;
 import readradar.entity.Book;
 import readradar.entity.User;
 
+import java.net.BindException;
 import java.util.*;
 
 @Service
@@ -214,5 +218,16 @@ public class ReadRadarService {
     @Transactional(readOnly = true)
     public BookModel retrieveBookByIsbn(Long bookIsbn){
         return new BookModel(findBookByIsbn(bookIsbn));
+    }
+
+    public void deleteBookById(Long bookId) throws Exception {
+        Book book = findBookById(bookId);
+        if (book.getUserCreated() == true){
+            bookDao.delete(book);
+        } else{
+            throw new Exception
+                    ("Method not allowed, unable to delete books that were not created by users");
+        }
+
     }
 }

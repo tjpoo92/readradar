@@ -22,6 +22,6 @@ public class GlobalErrorHandler{
         log.info(e.toString());
         Map<String, String> exceptionMap = new HashMap<>();
         exceptionMap.put("message", e.toString());
-        return  exceptionMap;
+        return exceptionMap;
     }
 }
