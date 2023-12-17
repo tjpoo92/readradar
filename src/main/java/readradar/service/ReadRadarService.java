@@ -12,10 +12,7 @@ import readradar.dao.UserDao;
 import readradar.entity.Author;
 import readradar.entity.User;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class ReadRadarService {
@@ -110,8 +107,20 @@ public class ReadRadarService {
     }
 
     @Transactional(readOnly = true)
-    public List<AuthorModel> retrieveAllAuthors() {
-        List<Author> authors = authorDao.findAll();
+    public List<AuthorModel> retrieveAllAuthors(Map<String,String> filters) {
+        List<Author> authors = null;
+        if (filters.isEmpty()){
+            authors = authorDao.findAll();
+        } else{
+            if (filters.containsKey("authorFirstName") && filters.containsKey("authorLastName")){
+                authors = authorDao.findByAuthorFirstNameAndAuthorLastName(filters.get("authorFirstName"), filters.get("authorLastName"));
+            } else if (filters.containsKey("authorFirstName")) {
+                authors = authorDao.findByAuthorFirstName(filters.get("authorFirstName"));
+            } else{
+                authors = authorDao.findByAuthorLastName(filters.get("authorLastName"));
+            }
+        }
+
         List<AuthorModel> result = new LinkedList<>();
 
         for (Author author : authors){

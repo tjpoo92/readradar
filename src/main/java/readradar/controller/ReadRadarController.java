@@ -3,10 +3,10 @@ package readradar.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import readradar.controller.model.AuthorModel;
 import readradar.controller.model.UserModel;
-import readradar.entity.User;
 import readradar.service.ReadRadarService;
 
 import java.util.List;
@@ -61,10 +61,10 @@ public class ReadRadarController{
 
     @GetMapping("/authors")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<AuthorModel> getAllAuthor(@RequestParam(value = "filter", required = false) String[] filters){
+    public List<AuthorModel> getAllAuthor(@RequestParam(required = false) Map<String,String> filters){
         log.info("Retrieving all authors with the following filters {}", filters);
         // TODO: Handle filters :)
-        return readRadarService.retrieveAllAuthors();
+        return readRadarService.retrieveAllAuthors(filters);
     }
 
     @GetMapping("/authors/{authorId}")
