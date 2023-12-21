@@ -1,19 +1,19 @@
 package readradar.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import readradar.controller.model.AuthorModel;
 import readradar.controller.model.BookModel;
 import readradar.controller.model.UserModel;
-import readradar.entity.Book;
+
 import readradar.service.ReadRadarService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -77,11 +77,11 @@ public class ReadRadarController{
     }
 
     // Book Endpoints
-    @PostMapping("/books")
+    @PostMapping("/authors/{authorId}/books")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public BookModel postBook(@RequestBody BookModel bookModel){
-        log.info("Creating book {}", bookModel);
-        return readRadarService.saveBook(bookModel);
+    public BookModel postBook(@PathVariable Long authorId, @RequestBody BookModel bookModel){
+        log.info("Attempting to create book {} associated with author ID: {}", bookModel, authorId);
+        return readRadarService.saveBook(authorId, bookModel);
     }
 
     @GetMapping("/books")
@@ -108,10 +108,22 @@ public class ReadRadarController{
     @PutMapping("/books/{bookId}")
     @ResponseStatus(code = HttpStatus.OK)
     public BookModel putBook(@PathVariable Long bookId, @RequestBody BookModel bookModel){
+        bookModel.setBookId(bookId);
         log.info("Update Book {} with {}", bookId, bookModel);
-        return readRadarService.saveBook(bookModel);
+        BookModel updatedBook = readRadarService.saveBook(bookModel);
+        if (Objects.isNull(updatedBook)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unable to non-user created book");
+        } else {
+            return updatedBook;
+        }
     }
 
-
+    @DeleteMapping("/books/{bookId}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public Map<String, String> deleteBookById(@PathVariable Long bookId){
+        log.info("Attempting to delete book with ID: {}", bookId);
+        readRadarService.deleteBookById(bookId);
+        return Map.of("message", "Deletion of user with ID:" + bookId);
+    }
 
 }

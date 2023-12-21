@@ -1,11 +1,8 @@
 package readradar.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.server.MethodNotAllowedException;
 import readradar.controller.model.AuthorModel;
 import readradar.controller.model.BookModel;
 import readradar.controller.model.UserModel;
@@ -17,7 +14,6 @@ import readradar.entity.Author;
 import readradar.entity.Book;
 import readradar.entity.User;
 
-import java.net.BindException;
 import java.util.*;
 
 @Service
@@ -47,7 +43,7 @@ public class ReadRadarService {
         user.setUserLastName(userModel.getUserLastName());
         user.setUserCreatedAt(userModel.getUserCreatedAt());
         user.setUserUpdatedAt(userModel.getUserUpdatedAt());
-        // TODO: Author information many users, many books
+        // TODO: Author information many users
     }
 
     private User findOrCreateUser(Long userId) {
@@ -90,8 +86,6 @@ public class ReadRadarService {
         author.setAuthorFirstName(authorModel.getAuthorFirstName());
         author.setAuthorLastName(authorModel.getAuthorLastName());
         author.setAuthorBirthDate(authorModel.getAuthorBirthDate());
-        // TODO: Fix birthdate, dates in general prob need fixed
-        // TODO: Books one author, many books
         // TODO: Users many authors, many users
     }
 
@@ -131,8 +125,8 @@ public class ReadRadarService {
 
         for (Author author : authors){
             AuthorModel authorModel = new AuthorModel(author);
-            // TODO: Verify once book endpoints are done
-            authorModel.getBooks().stream().limit(5);
+            // TODO: Would prefer to show some, but not all books
+            authorModel.getBooks().clear();
             result.add(authorModel);
         }
         return result;
@@ -162,24 +156,41 @@ public class ReadRadarService {
     }
 
     @Transactional
+    public BookModel saveBook(Long AuthorId, BookModel bookModel){
+        Long bookId = bookModel.getBookId();
+        Long bookIsbn = bookModel.getIsbn();
+
+        Book book = findOrCreateBook(bookId, bookIsbn);
+        Author author = findOrCreateAuthor(AuthorId);
+
+        if (book.getUserCreated()){
+            copyBookFields(book, bookModel);
+            
+            book.setAuthor(author);
+            author.getBooks().add(book);
+            return new BookModel(bookDao.save(book));
+        } else{
+            return null;
+        }
+    }
     public BookModel saveBook(BookModel bookModel) {
         Long bookId = bookModel.getBookId();
         Long bookIsbn = bookModel.getIsbn();
 
         Book book = findOrCreateBook(bookId, bookIsbn);
 
-        if (book.getUserCreated() == true){
+        if (book.getUserCreated()){
             copyBookFields(book, bookModel);
+            return new BookModel(bookDao.save(book));
+        } else{
+            return null;
         }
-
-        return new BookModel(bookDao.save(book));
     }
 
     private void copyBookFields(Book book, BookModel bookModel) {
         book.setBookName(bookModel.getBookName());
-        book.setNumberOfPages(bookModel.getNumberOfPage());
+        book.setNumberOfPages(bookModel.getNumberOfPages());
         book.setYearPublished(bookModel.getYearPublished());
-        // TODO: How tf do I handle author portion?
     }
 
     private Book findOrCreateBook(Long bookId, Long bookIsbn) {
@@ -220,13 +231,14 @@ public class ReadRadarService {
         return new BookModel(findBookByIsbn(bookIsbn));
     }
 
-    public void deleteBookById(Long bookId) throws Exception {
+    @Transactional
+    public void deleteBookById(Long bookId) {
         Book book = findBookById(bookId);
         if (book.getUserCreated() == true){
             bookDao.delete(book);
         } else{
-            throw new Exception
-                    ("Method not allowed, unable to delete books that were not created by users");
+            System.out.println("Don't do that!");
+
         }
 
     }

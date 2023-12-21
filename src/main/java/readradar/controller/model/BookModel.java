@@ -15,7 +15,7 @@ public class BookModel {
     private Long bookId;
     private String bookName;
     private Long isbn;
-    private Integer numberOfPage;
+    private Integer numberOfPages;
     private Year yearPublished;
     private Boolean userCreated;
     private Set<ShelfModel> shelves = new HashSet<>();
@@ -24,11 +24,11 @@ public class BookModel {
         this.bookId = book.getBookId();
         this.bookName = book.getBookName();
         this.isbn = book.getIsbn();
-        this.numberOfPage = book.getNumberOfPages();
+        this.numberOfPages = book.getNumberOfPages();
         this.yearPublished = book.getYearPublished();
         this.userCreated = book.getUserCreated();
         for(Shelf shelf : book.getShelves()){
             this.shelves.add(new ShelfModel(shelf));
         }
-  ;  }
+    }
 }

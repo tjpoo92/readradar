@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -19,7 +21,11 @@ public class User{
     private String userEmail;
     private String userFirstName;
     private String userLastName;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private Date userCreatedAt;
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private Date userUpdatedAt;
 
     @EqualsAndHashCode.Exclude
