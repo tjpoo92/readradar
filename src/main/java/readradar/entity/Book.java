@@ -24,15 +24,23 @@ public class Book {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "author_id")
     private Author author;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "book_shelf",
-            joinColumns = @JoinColumn(name="book_id"),
-            inverseJoinColumns = @JoinColumn(name="shelf_id"))
+    @ManyToMany(mappedBy = "books", cascade = CascadeType.PERSIST)
     private Set<Shelf> shelves = new HashSet<>();
+
+    public void addShelf(Shelf shelf){
+        this.shelves.add(shelf);
+        shelf.getBooks().add(this);
+    }
+
+    public void removeShelf(Shelf shelf){
+        this.shelves.remove(shelf);
+        shelf.getBooks().remove(this);
+    }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import readradar.controller.model.AuthorModel;
 import readradar.controller.model.BookModel;
+import readradar.controller.model.ShelfModel;
 import readradar.controller.model.UserModel;
 
 import readradar.service.ReadRadarService;
@@ -32,14 +33,12 @@ public class ReadRadarController{
     }
 
     @GetMapping("/users/{userId}")
-    @ResponseStatus(code = HttpStatus.OK)
     public UserModel getUserByUserId(@PathVariable Long userId){
         log.info("Retrieving user using ID: {}", userId);
         return readRadarService.retrieveUserById(userId);
     }
 
     @PutMapping("/users/{userId}")
-    @ResponseStatus(code = HttpStatus.OK)
     public UserModel putUser(@RequestBody UserModel userModel, @PathVariable Long userId){
         userModel.setUserId(userId);
         log.info("Update User {} with {}", userId, userModel);
@@ -47,7 +46,6 @@ public class ReadRadarController{
     }
 
     @DeleteMapping("/users/{userId}")
-    @ResponseStatus(code = HttpStatus.OK)
     public Map<String, String> deleteUserById(@PathVariable Long userId){
         log.info("Deleting User with ID: {}", userId);
         readRadarService.deleteUserById(userId);
@@ -63,14 +61,12 @@ public class ReadRadarController{
     }
 
     @GetMapping("/authors")
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<AuthorModel> getAllAuthor(@RequestParam(required = false) Map<String,String> filters){
+    public List<AuthorModel> getAllAuthors(@RequestParam(required = false) Map<String,String> filters){
         log.info("Retrieving all authors with the following filters {}", filters);
         return readRadarService.retrieveAllAuthors(filters);
     }
 
     @GetMapping("/authors/{authorId}")
-    @ResponseStatus(code = HttpStatus.OK)
     public AuthorModel getAuthorById(@PathVariable Long authorId){
         log.info("Retrieving author using ID: {}", authorId);
         return readRadarService.retrieveAuthorById(authorId);
@@ -85,45 +81,73 @@ public class ReadRadarController{
     }
 
     @GetMapping("/books")
-    @ResponseStatus(code = HttpStatus.OK)
     public List<BookModel> getAllBook(@RequestParam(required = false) Map<String, String> filters){
         log.info("Retrieving all books with the following filters {}", filters);
         return readRadarService.retrieveAllBooks(filters);
     }
 
     @GetMapping("/books/{bookId}")
-    @ResponseStatus(code = HttpStatus.OK)
     public BookModel getBookById(@PathVariable Long bookId){
         log.info("Retrieving book using ID: {}", bookId);
         return readRadarService.retrieveBookById(bookId);
     }
 
     @GetMapping("/books/isbn/{bookIsbn}")
-    @ResponseStatus(code = HttpStatus.OK)
     public BookModel getBookByIsbn(@PathVariable Long bookIsbn){
         log.info("Retrieving book using ISBN: {}", bookIsbn);
         return readRadarService.retrieveBookByIsbn(bookIsbn);
     }
 
     @PutMapping("/books/{bookId}")
-    @ResponseStatus(code = HttpStatus.OK)
     public BookModel putBook(@PathVariable Long bookId, @RequestBody BookModel bookModel){
         bookModel.setBookId(bookId);
         log.info("Update Book {} with {}", bookId, bookModel);
         BookModel updatedBook = readRadarService.saveBook(bookModel);
         if (Objects.isNull(updatedBook)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unable to non-user created book");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unable to update non-user created book");
         } else {
             return updatedBook;
         }
     }
 
     @DeleteMapping("/books/{bookId}")
-    @ResponseStatus(code = HttpStatus.OK)
     public Map<String, String> deleteBookById(@PathVariable Long bookId){
         log.info("Attempting to delete book with ID: {}", bookId);
         readRadarService.deleteBookById(bookId);
         return Map.of("message", "Deletion of user with ID:" + bookId);
+    }
+
+    // Shelf Endpoints
+    @PostMapping("/users/{userId}/shelves")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public ShelfModel postShelf(@PathVariable Long userId, @RequestBody ShelfModel shelfModel){
+        log.info("Attempting to create shelf {} associated with user ID: {}", shelfModel, userId);
+        return readRadarService.saveShelf(userId, shelfModel);
+    }
+
+    @GetMapping("/shelves/{shelfId}")
+    public ShelfModel getShelfByShelfId(@PathVariable Long shelfId){
+        log.info("Retrieving shelf using ID: {}", shelfId);
+        return readRadarService.retrieveShelfById(shelfId);
+    }
+
+    @GetMapping("/users/{userId}/shelves")
+    public List<ShelfModel> getAllShelves(@PathVariable Long userId){
+        log.info("Retrieving all shelves");
+        return readRadarService.retrieveAllShelves(userId);
+    }
+
+    @PutMapping("/books/{bookId}/shelves/{shelfId}")
+    public ShelfModel putShelf(@PathVariable Long shelfId, @PathVariable Long bookId){
+        log.info("Attempting to update shelf ID: {} with book ID: {}", shelfId, bookId);
+        return readRadarService.addBookToShelf(shelfId,bookId);
+    }
+
+    @DeleteMapping("/shelves/{shelfId}")
+    public Map<String,String> deleteShelfById(@PathVariable Long shelfId){
+        log.info("Attempting to delete shelf with ID: {}",shelfId);
+        readRadarService.deleteShelfById(shelfId);
+        return Map.of("message", "Deletion of shelf with ID:" + shelfId + " completed.");
     }
 
 }

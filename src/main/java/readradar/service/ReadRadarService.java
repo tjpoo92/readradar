@@ -1,10 +1,13 @@
 package readradar.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import readradar.controller.model.AuthorModel;
 import readradar.controller.model.BookModel;
+import readradar.controller.model.ShelfModel;
 import readradar.controller.model.UserModel;
 import readradar.dao.ShelfDao;
 import readradar.dao.BookDao;
@@ -12,6 +15,7 @@ import readradar.dao.AuthorDao;
 import readradar.dao.UserDao;
 import readradar.entity.Author;
 import readradar.entity.Book;
+import readradar.entity.Shelf;
 import readradar.entity.User;
 
 import java.util.*;
@@ -43,7 +47,6 @@ public class ReadRadarService {
         user.setUserLastName(userModel.getUserLastName());
         user.setUserCreatedAt(userModel.getUserCreatedAt());
         user.setUserUpdatedAt(userModel.getUserUpdatedAt());
-        // TODO: Author information many users
     }
 
     private User findOrCreateUser(Long userId) {
@@ -86,7 +89,6 @@ public class ReadRadarService {
         author.setAuthorFirstName(authorModel.getAuthorFirstName());
         author.setAuthorLastName(authorModel.getAuthorLastName());
         author.setAuthorBirthDate(authorModel.getAuthorBirthDate());
-        // TODO: Users many authors, many users
     }
 
     private Author findOrCreateAuthor(Long authorId) {
@@ -165,7 +167,6 @@ public class ReadRadarService {
 
         if (book.getUserCreated()){
             copyBookFields(book, bookModel);
-            
             book.setAuthor(author);
             author.getBooks().add(book);
             return new BookModel(bookDao.save(book));
@@ -234,12 +235,77 @@ public class ReadRadarService {
     @Transactional
     public void deleteBookById(Long bookId) {
         Book book = findBookById(bookId);
-        if (book.getUserCreated() == true){
+        if (book.getUserCreated()){
+            for (Shelf shelf : book.getShelves()) {
+                book.removeShelf(shelf);
+            }
             bookDao.delete(book);
         } else{
-            System.out.println("Don't do that!");
-
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unable to delete non-user created book");
         }
-
     }
+
+    @Transactional
+    public ShelfModel saveShelf(Long userId, ShelfModel shelfModel) {
+        Long shelfId = shelfModel.getShelfId();
+        Shelf shelf = findOrCreateShelf(shelfId);
+        User user = findOrCreateUser(userId);
+
+        // TODO: create shelf name ffs
+        shelf.setUser(user);
+        user.getShelves().add(shelf);
+
+        return new ShelfModel(shelfDao.save(shelf));
+    }
+
+    public ShelfModel addBookToShelf(Long shelfId, Long bookId) {
+        Shelf shelf = findOrCreateShelf(shelfId);
+        Book book = findOrCreateBook(bookId, null);
+
+        shelf.getBooks().add(book);
+        book.getShelves().add(shelf);
+
+        Shelf dbShelf = shelfDao.save(shelf);
+        return new ShelfModel(dbShelf);
+    }
+
+    private Shelf findOrCreateShelf(Long shelfId) {
+        Shelf shelf;
+
+        if(Objects.isNull(shelfId)){
+            shelf = new Shelf();
+        } else{
+            shelf = findShelfById(shelfId);
+        }
+        return shelf;
+    }
+
+    private Shelf findShelfById(Long shelfId) {
+        return shelfDao.findById(shelfId)
+                .orElseThrow(()->new NoSuchElementException
+                        ("Shelf with ID:" + shelfId + " was not found."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ShelfModel> retrieveAllShelves(Long userId) {
+        List<Shelf> shelves = shelfDao.findByUserId(userId);
+        List<ShelfModel> result = new LinkedList<>();
+        for (Shelf shelf : shelves){
+            ShelfModel shelfModel = new ShelfModel(shelf);
+            result.add(shelfModel);
+        }
+        return result;
+    }
+    @Transactional(readOnly = true)
+    public ShelfModel retrieveShelfById(Long shelfId) {
+        return new ShelfModel(findShelfById(shelfId));
+    }
+
+    @Transactional
+    public void deleteShelfById(Long shelfId) {
+        Shelf shelf = findShelfById(shelfId);
+        shelfDao.delete(shelf);
+    }
+
+
 }

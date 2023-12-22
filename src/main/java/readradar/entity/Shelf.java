@@ -26,12 +26,16 @@ public class Shelf {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     private User user;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(mappedBy = "shelves", cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "book_shelf",
+            joinColumns = @JoinColumn(name="shelf_id"),
+            inverseJoinColumns = @JoinColumn(name="book_id"))
     private Set<Book> books = new HashSet<>();
+
 }
