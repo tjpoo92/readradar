@@ -45,6 +45,12 @@ public class ReadRadarController{
         return readRadarService.saveUser(userModel);
     }
 
+    @PutMapping("/users/{userId}/author/{authorId}")
+    public UserModel putUser(@PathVariable Long userId, @PathVariable Long authorId){
+        log.info("Adding author ID: {} to user ID: {} profile", authorId, userId);
+        return readRadarService.addAuthorToUser(userId, authorId);
+    }
+
     @DeleteMapping("/users/{userId}")
     public Map<String, String> deleteUserById(@PathVariable Long userId){
         log.info("Deleting User with ID: {}", userId);

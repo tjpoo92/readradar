@@ -41,6 +41,19 @@ public class ReadRadarService {
         return new UserModel(userDao.save(user));
     }
 
+    @Transactional
+    public UserModel addAuthorToUser(Long userId, Long authorId) {
+        User user = findOrCreateUser(userId);
+        Author author = findOrCreateAuthor(authorId);
+
+        // TODO: Stretch -> Tons of nesting of books and shelves will need to fix
+        user.getAuthors().add(author);
+        author.getUsers().add(user);
+
+        User dbUser = userDao.save(user);
+        return new UserModel(dbUser);
+    }
+
     private void copyUserFields(User user, UserModel userModel) {
         user.setUserEmail(userModel.getUserEmail());
         user.setUserFirstName(userModel.getUserFirstName());
@@ -307,6 +320,4 @@ public class ReadRadarService {
         Shelf shelf = findShelfById(shelfId);
         shelfDao.delete(shelf);
     }
-
-
 }
