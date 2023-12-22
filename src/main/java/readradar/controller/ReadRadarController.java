@@ -130,6 +130,11 @@ public class ReadRadarController{
         log.info("Retrieving all shelves");
         return readRadarService.retrieveAllShelves(userId);
     }
+//    TODO: Stretch -> update shelf name
+//    @PutMapping("/users/{userId}/shelf/{shelfId}")
+//    public ShelfModel putShelf(@PathVariable Long userId, @PathVariable Long shelfId, @RequestBody ShelfModel shelfModel){
+//        return null;
+//    }
 
     @PutMapping("/books/{bookId}/shelves/{shelfId}")
     public ShelfModel putShelf(@PathVariable Long shelfId, @PathVariable Long bookId){

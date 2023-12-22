@@ -17,6 +17,7 @@ public class Shelf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long shelfId;
+    private String shelfName;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date shelfCreatedAt;

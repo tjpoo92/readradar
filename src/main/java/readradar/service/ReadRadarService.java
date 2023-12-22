@@ -251,11 +251,16 @@ public class ReadRadarService {
         Shelf shelf = findOrCreateShelf(shelfId);
         User user = findOrCreateUser(userId);
 
-        // TODO: create shelf name ffs
+        copyShelfFields(shelf, shelfModel);
+
         shelf.setUser(user);
         user.getShelves().add(shelf);
 
         return new ShelfModel(shelfDao.save(shelf));
+    }
+
+    private void copyShelfFields(Shelf shelf, ShelfModel shelfModel) {
+        shelf.setShelfName(shelfModel.getShelfName());
     }
 
     public ShelfModel addBookToShelf(Long shelfId, Long bookId) {
