@@ -296,10 +296,6 @@ public class ReadRadarService {
         }
         return result;
     }
-    @Transactional(readOnly = true)
-    public ShelfModel retrieveShelfById(Long shelfId) {
-        return new ShelfModel(findShelfById(shelfId));
-    }
 
     @Transactional
     public void deleteShelfById(Long shelfId) {

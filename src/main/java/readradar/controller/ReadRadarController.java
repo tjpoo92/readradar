@@ -125,12 +125,6 @@ public class ReadRadarController{
         return readRadarService.saveShelf(userId, shelfModel);
     }
 
-    @GetMapping("/shelves/{shelfId}")
-    public ShelfModel getShelfByShelfId(@PathVariable Long shelfId){
-        log.info("Retrieving shelf using ID: {}", shelfId);
-        return readRadarService.retrieveShelfById(shelfId);
-    }
-
     @GetMapping("/users/{userId}/shelves")
     public List<ShelfModel> getAllShelves(@PathVariable Long userId){
         log.info("Retrieving all shelves");
