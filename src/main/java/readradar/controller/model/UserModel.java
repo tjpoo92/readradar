@@ -18,8 +18,6 @@ public class UserModel {
     private String userEmail;
     private String userFirstName;
     private String userLastName;
-    private Date userCreatedAt;
-    private Date userUpdatedAt;
     private Set<AuthorModel> authors = new HashSet<>();
     private Set<ShelfModel> shelves = new HashSet<>();
 
@@ -28,8 +26,6 @@ public class UserModel {
         this.userEmail = user.getUserEmail();
         this.userFirstName = user.getUserFirstName();
         this.userLastName = user.getUserLastName();
-        this.userCreatedAt = user.getUserCreatedAt();
-        this.userUpdatedAt = user.getUserUpdatedAt();
         for (Author author : user.getAuthors()){
             this.authors.add(new AuthorModel(author));
         }

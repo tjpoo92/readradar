@@ -9,9 +9,9 @@ import readradar.controller.model.AuthorModel;
 import readradar.controller.model.BookModel;
 import readradar.controller.model.ShelfModel;
 import readradar.controller.model.UserModel;
-import readradar.dao.ShelfDao;
-import readradar.dao.BookDao;
 import readradar.dao.AuthorDao;
+import readradar.dao.BookDao;
+import readradar.dao.ShelfDao;
 import readradar.dao.UserDao;
 import readradar.entity.Author;
 import readradar.entity.Book;
@@ -58,16 +58,14 @@ public class ReadRadarService {
         user.setUserEmail(userModel.getUserEmail());
         user.setUserFirstName(userModel.getUserFirstName());
         user.setUserLastName(userModel.getUserLastName());
-        user.setUserCreatedAt(userModel.getUserCreatedAt());
-        user.setUserUpdatedAt(userModel.getUserUpdatedAt());
     }
 
     private User findOrCreateUser(Long userId) {
         User user;
 
-        if (Objects.isNull(userId)){
+        if (Objects.isNull(userId)) {
             user = new User();
-        } else{
+        } else {
             user = findUserById(userId);
         }
         return user;
@@ -107,9 +105,9 @@ public class ReadRadarService {
     private Author findOrCreateAuthor(Long authorId) {
         Author author;
 
-        if (Objects.isNull(authorId)){
+        if (Objects.isNull(authorId)) {
             author = new Author();
-        } else{
+        } else {
             author = findAuthorById(authorId);
         }
         return author;
@@ -122,23 +120,23 @@ public class ReadRadarService {
     }
 
     @Transactional(readOnly = true)
-    public List<AuthorModel> retrieveAllAuthors(Map<String,String> filters) {
+    public List<AuthorModel> retrieveAllAuthors(Map<String, String> filters) {
         List<Author> authors;
-        if (filters.isEmpty()){
+        if (filters.isEmpty()) {
             authors = authorDao.findAll();
-        } else{
-            if (filters.containsKey("authorFirstName") && filters.containsKey("authorLastName")){
+        } else {
+            if (filters.containsKey("authorFirstName") && filters.containsKey("authorLastName")) {
                 authors = authorDao.findByAuthorFirstNameAndAuthorLastName(filters.get("authorFirstName"), filters.get("authorLastName"));
             } else if (filters.containsKey("authorFirstName")) {
                 authors = authorDao.findByAuthorFirstName(filters.get("authorFirstName"));
-            } else{
+            } else {
                 authors = authorDao.findByAuthorLastName(filters.get("authorLastName"));
             }
         }
 
         List<AuthorModel> result = new LinkedList<>();
 
-        for (Author author : authors){
+        for (Author author : authors) {
             AuthorModel authorModel = new AuthorModel(author);
             // TODO: Would prefer to show some, but not all books
             authorModel.getBooks().clear();
@@ -155,15 +153,15 @@ public class ReadRadarService {
     @Transactional(readOnly = true)
     public List<BookModel> retrieveAllBooks(Map<String, String> filters) {
         List<Book> books;
-        if (filters.isEmpty()){
+        if (filters.isEmpty()) {
             books = bookDao.findAll();
-        } else{
+        } else {
             books = bookDao.findByBookName(filters.get("bookName"));
         }
 
         List<BookModel> result = new LinkedList<>();
 
-        for (Book book : books){
+        for (Book book : books) {
             BookModel bookModel = new BookModel(book);
             result.add(bookModel);
         }
@@ -171,32 +169,33 @@ public class ReadRadarService {
     }
 
     @Transactional
-    public BookModel saveBook(Long AuthorId, BookModel bookModel){
+    public BookModel saveBook(Long AuthorId, BookModel bookModel) {
         Long bookId = bookModel.getBookId();
         Long bookIsbn = bookModel.getIsbn();
 
         Book book = findOrCreateBook(bookId, bookIsbn);
         Author author = findOrCreateAuthor(AuthorId);
 
-        if (book.getUserCreated()){
+        if (book.getUserCreated()) {
             copyBookFields(book, bookModel);
             book.setAuthor(author);
             author.getBooks().add(book);
             return new BookModel(bookDao.save(book));
-        } else{
+        } else {
             return null;
         }
     }
+
     public BookModel saveBook(BookModel bookModel) {
         Long bookId = bookModel.getBookId();
         Long bookIsbn = bookModel.getIsbn();
 
         Book book = findOrCreateBook(bookId, bookIsbn);
 
-        if (book.getUserCreated()){
+        if (book.getUserCreated()) {
             copyBookFields(book, bookModel);
             return new BookModel(bookDao.save(book));
-        } else{
+        } else {
             return null;
         }
     }
@@ -210,10 +209,10 @@ public class ReadRadarService {
     private Book findOrCreateBook(Long bookId, Long bookIsbn) {
         Book book;
 
-        if (Objects.isNull(bookId) && Objects.isNull(bookIsbn)){
+        if (Objects.isNull(bookId) && Objects.isNull(bookIsbn)) {
             book = new Book();
             book.setUserCreated(true);
-        } else if (Objects.isNull(bookIsbn)){
+        } else if (Objects.isNull(bookIsbn)) {
             book = findBookById(bookId);
         } else {
             book = findBookByIsbn(bookIsbn);
@@ -224,15 +223,15 @@ public class ReadRadarService {
     @Transactional(readOnly = true)
     private Book findBookByIsbn(Long bookIsbn) {
         return bookDao.findByIsbn(bookIsbn)
-                .orElseThrow(()-> new NoSuchElementException
+                .orElseThrow(() -> new NoSuchElementException
                         ("Book with ISBN:" + bookIsbn + " was not found"));
     }
 
     @Transactional(readOnly = true)
     private Book findBookById(Long bookId) {
         return bookDao.findById(bookId)
-                .orElseThrow(()-> new NoSuchElementException
-                        ("Book with ID:"+ bookId + " was not found."));
+                .orElseThrow(() -> new NoSuchElementException
+                        ("Book with ID:" + bookId + " was not found."));
     }
 
     @Transactional(readOnly = true)
@@ -241,19 +240,19 @@ public class ReadRadarService {
     }
 
     @Transactional(readOnly = true)
-    public BookModel retrieveBookByIsbn(Long bookIsbn){
+    public BookModel retrieveBookByIsbn(Long bookIsbn) {
         return new BookModel(findBookByIsbn(bookIsbn));
     }
 
     @Transactional
     public void deleteBookById(Long bookId) {
         Book book = findBookById(bookId);
-        if (book.getUserCreated()){
+        if (book.getUserCreated()) {
             for (Shelf shelf : book.getShelves()) {
                 book.removeShelf(shelf);
             }
             bookDao.delete(book);
-        } else{
+        } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unable to delete non-user created book");
         }
     }
@@ -290,9 +289,9 @@ public class ReadRadarService {
     private Shelf findOrCreateShelf(Long shelfId) {
         Shelf shelf;
 
-        if(Objects.isNull(shelfId)){
+        if (Objects.isNull(shelfId)) {
             shelf = new Shelf();
-        } else{
+        } else {
             shelf = findShelfById(shelfId);
         }
         return shelf;
@@ -300,7 +299,7 @@ public class ReadRadarService {
 
     private Shelf findShelfById(Long shelfId) {
         return shelfDao.findById(shelfId)
-                .orElseThrow(()->new NoSuchElementException
+                .orElseThrow(() -> new NoSuchElementException
                         ("Shelf with ID:" + shelfId + " was not found."));
     }
 
@@ -308,7 +307,7 @@ public class ReadRadarService {
     public List<ShelfModel> retrieveAllShelves(Long userId) {
         List<Shelf> shelves = shelfDao.findByUserId(userId);
         List<ShelfModel> result = new LinkedList<>();
-        for (Shelf shelf : shelves){
+        for (Shelf shelf : shelves) {
             ShelfModel shelfModel = new ShelfModel(shelf);
             result.add(shelfModel);
         }
