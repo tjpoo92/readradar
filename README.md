@@ -27,6 +27,7 @@ This project is a continuation of previous front-end projects I've done:
 
 * [ ] Add/Change PUTs to be PATCHs, allows some additional flexibility and usabilitiy to change only exactly what is needed
 * [ ] Add API authentication
+* [ ] Add OpenAPI compatibility
 * [ ] Hook up to a front-end
 * [ ] User authentication
 
