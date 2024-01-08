@@ -35,6 +35,7 @@ This project is a continuation of previous front-end projects I've done:
 
 📈 Project is still in progress, but here's an early retro...
 
+2023-01-08:
 This was my final project for my back-end bootcamp and it was extremely fun to work on. This was my first project I worked on that allowed me to use a bunch of techniques and best practices that I had picked up from a previous job and it allowed my to very easily write my user stories and then work through each of those stories one-by-one and complete the project with plenty of time to space. There's still more I plan to do for this project, but it is currently in a state to submit for my bootcamp final.
 
 #### Things to Improve Upon:
