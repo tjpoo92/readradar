@@ -142,10 +142,16 @@ public class ReadRadarController{
         return readRadarService.saveShelf(userId, shelfId, shelfModel);
     }
 
-    @PutMapping("/books/{bookId}/shelves/{shelfId}")
-    public ShelfModel putShelf(@PathVariable Long shelfId, @PathVariable Long bookId){
+    @PutMapping("/shelves/{shelfId}/books/{bookId}/add")
+    public ShelfModel addBookToShelf(@PathVariable Long shelfId, @PathVariable Long bookId){
         log.info("Attempting to update shelf ID: {} with book ID: {}", shelfId, bookId);
         return readRadarService.addBookToShelf(shelfId,bookId);
+    }
+
+    @PutMapping("/shelves/{shelfId}/books/{bookId}/remove")
+    public ShelfModel removeBookFromShelf(@PathVariable Long shelfId, @PathVariable Long bookId){
+        log.info("Attempting to remove book ID: {} from shelf ID: {}", bookId, shelfId);
+        return readRadarService.removeBookFromShelf(shelfId,bookId);
     }
 
     @DeleteMapping("/shelves/{shelfId}")
