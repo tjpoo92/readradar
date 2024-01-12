@@ -272,6 +272,18 @@ public class ReadRadarService {
         return new ShelfModel(shelfDao.save(shelf));
     }
 
+    public ShelfModel saveShelf(Long userId, Long shelfId, ShelfModel shelfModel) {
+        Shelf shelf = findOrCreateShelf(shelfId);
+        User user = findOrCreateUser(userId);
+
+        copyShelfFields(shelf, shelfModel);
+
+        shelf.setUser(user);
+        user.getShelves().add(shelf);
+
+        return new ShelfModel(shelfDao.save(shelf));
+    }
+
     private void copyShelfFields(Shelf shelf, ShelfModel shelfModel) {
         shelf.setShelfName(shelfModel.getShelfName());
     }
@@ -282,6 +294,17 @@ public class ReadRadarService {
 
         shelf.getBooks().add(book);
         book.getShelves().add(shelf);
+
+        Shelf dbShelf = shelfDao.save(shelf);
+        return new ShelfModel(dbShelf);
+    }
+
+    public ShelfModel removeBookFromShelf(Long shelfId, Long bookId) {
+        Shelf shelf = findOrCreateShelf(shelfId);
+        Book book = findOrCreateBook(bookId, null);
+
+        shelf.getBooks().remove(book);
+        book.getShelves().remove(shelf);
 
         Shelf dbShelf = shelfDao.save(shelf);
         return new ShelfModel(dbShelf);
@@ -320,4 +343,6 @@ public class ReadRadarService {
         Shelf shelf = findShelfById(shelfId);
         shelfDao.delete(shelf);
     }
+
+
 }

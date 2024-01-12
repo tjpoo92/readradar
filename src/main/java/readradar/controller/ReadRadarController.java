@@ -136,11 +136,11 @@ public class ReadRadarController{
         log.info("Retrieving all shelves");
         return readRadarService.retrieveAllShelves(userId);
     }
-//    TODO: Stretch -> update shelf name
-//    @PutMapping("/users/{userId}/shelf/{shelfId}")
-//    public ShelfModel putShelf(@PathVariable Long userId, @PathVariable Long shelfId, @RequestBody ShelfModel shelfModel){
-//        return null;
-//    }
+
+    @PatchMapping("/users/{userId}/shelf/{shelfId}")
+    public ShelfModel patchShelfName(@PathVariable Long userId, @PathVariable Long shelfId, @RequestBody ShelfModel shelfModel){
+        return readRadarService.saveShelf(userId, shelfId, shelfModel);
+    }
 
     @PutMapping("/books/{bookId}/shelves/{shelfId}")
     public ShelfModel putShelf(@PathVariable Long shelfId, @PathVariable Long bookId){
