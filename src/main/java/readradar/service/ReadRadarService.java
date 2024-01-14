@@ -1,6 +1,9 @@
 package readradar.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -138,10 +141,23 @@ public class ReadRadarService {
 
         List<AuthorModel> result = new LinkedList<>();
 
+
+
+
+
         for (Author author : authors){
             AuthorModel authorModel = new AuthorModel(author);
-            // TODO: Would prefer to show some, but not all books
+            Long authorId = authorModel.getAuthorId();
+            Pageable pageable = PageRequest.of(0,5);
+
+            List<Book> firstFiveBooks = bookDao.findByAuthorId(authorId, pageable);
+            Set<BookModel> shortListBooks = new HashSet<>();
+            for (Book book : firstFiveBooks){
+                BookModel bookModel = new BookModel(book);
+                shortListBooks.add(bookModel);
+            }
             authorModel.getBooks().clear();
+            authorModel.setBooks(shortListBooks);
             result.add(authorModel);
         }
         return result;

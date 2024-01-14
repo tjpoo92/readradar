@@ -2,6 +2,8 @@ package readradar.controller.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import readradar.entity.Author;
 import readradar.entity.Book;
 

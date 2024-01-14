@@ -120,7 +120,7 @@ public class ReadRadarController{
     public Map<String, String> deleteBookById(@PathVariable Long bookId){
         log.info("Attempting to delete book with ID: {}", bookId);
         readRadarService.deleteBookById(bookId);
-        return Map.of("message", "Deletion of user with ID:" + bookId);
+        return Map.of("message", "Deletion of book with ID:" + bookId);
     }
 
     // Shelf Endpoints
